@@ -1,0 +1,836 @@
+Vmchecker requires two machines 
+				- a storer
+				- a tester
+Vmchecker repo structure
+
+
+vmchecker
+    ├── AUTHORS
+    ├── bin
+    │   ├── vmchecker-download-external-files
+    │   ├── vmchecker-init-course
+    │   ├── vmchecker-queue-manager
+    │   ├── vmchecker-resubmit
+    │   ├── vmchecker-submit
+    │   ├── vmchecker-update-db
+    │   ├── vmchecker-view-grades
+    │   ├── vmchecker-vm-executor
+    │   └── vmchecker-vm-message-handler
+    ├── clean.sh
+    ├── etc
+    │   ├── init.d
+    │   │   └── vmchecker
+    │   └── vmchecker
+    │       ├── acl.config
+    │       ├── config.list
+    │       └── ldap.config
+    ├── gwt
+    │   └── vmchecker-gui
+    │       ├── src
+    │       │   └── ro
+    │       │       └── pub
+    │       │           └── cs
+    │       │               └── vmchecker
+    │       │                   ├── client
+    │       │                   │   ├── AppController.java
+    │       │                   │   ├── CookieManager.java
+    │       │                   │   ├── event
+    │       │                   │   │   ├── AssignmentSelectedEventHandler.java
+    │       │                   │   │   ├── AssignmentSelectedEvent.java
+    │       │                   │   │   ├── AuthenticationEventHandler.java
+    │       │                   │   │   ├── AuthenticationEvent.java
+    │       │                   │   │   ├── CourseSelectedEventHandler.java
+    │       │                   │   │   ├── CourseSelectedEvent.java
+    │       │                   │   │   ├── ErrorDisplayEvent.java
+    │       │                   │   │   ├── StatusChangedEventHandler.java
+    │       │                   │   │   └── StatusChangedEvent.java
+    │       │                   │   ├── i18n
+    │       │                   │   │   ├── AssignmentBoardConstants.java
+    │       │                   │   │   ├── AssignmentBoardConstants.properties
+    │       │                   │   │   ├── AssignmentBoardConstants_ro.properties
+    │       │                   │   │   ├── AssignmentConstants.java
+    │       │                   │   │   ├── AssignmentConstants.properties
+    │       │                   │   │   ├── AssignmentConstants_ro.properties
+    │       │                   │   │   ├── HeaderConstants.java
+    │       │                   │   │   ├── HeaderConstants.properties
+    │       │                   │   │   ├── HeaderConstants_ro.properties
+    │       │                   │   │   ├── LoginConstants.java
+    │       │                   │   │   ├── LoginConstants.properties
+    │       │                   │   │   ├── LoginConstants_ro.properties
+    │       │                   │   │   ├── StatementConstants.java
+    │       │                   │   │   ├── StatementConstants.properties
+    │       │                   │   │   ├── StatementConstants_ro.properties
+    │       │                   │   │   ├── UploadConstants.java
+    │       │                   │   │   ├── UploadConstants.properties
+    │       │                   │   │   ├── UploadConstants_ro.properties
+    │       │                   │   │   ├── VmcheckerConstants.java
+    │       │                   │   │   ├── VmcheckerConstants.properties
+    │       │                   │   │   └── VmcheckerConstants_ro.properties
+    │       │                   │   ├── model
+    │       │                   │   │   ├── Assignment.java
+    │       │                   │   │   ├── AuthenticationResponse.java
+    │       │                   │   │   ├── Course.java
+    │       │                   │   │   ├── ErrorResponse.java
+    │       │                   │   │   ├── EvaluationResult.java
+    │       │                   │   │   ├── FileList.java
+    │       │                   │   │   ├── LargeEvaluationResponse.java
+    │       │                   │   │   ├── Md5Status.java
+    │       │                   │   │   ├── Result.java
+    │       │                   │   │   ├── StudentInfo.java
+    │       │                   │   │   ├── UploadStatus.java
+    │       │                   │   │   └── User.java
+    │       │                   │   ├── presenter
+    │       │                   │   │   ├── AssignmentBoardPresenter.java
+    │       │                   │   │   ├── AssignmentBoardUploadPresenter.java
+    │       │                   │   │   ├── AssignmentPresenter.java
+    │       │                   │   │   ├── HeaderPresenter.java
+    │       │                   │   │   ├── LoginPresenter.java
+    │       │                   │   │   ├── MenuPresenter.java
+    │       │                   │   │   ├── Presenter.java
+    │       │                   │   │   └── StatisticsPresenter.java
+    │       │                   │   ├── service
+    │       │                   │   │   ├── Delegate.java
+    │       │                   │   │   ├── HTTPService.java
+    │       │                   │   │   ├── json
+    │       │                   │   │   │   ├── AssignmentsListDecoder.java
+    │       │                   │   │   │   ├── AuthenticationResponseDecoder.java
+    │       │                   │   │   │   ├── CoursesListDecoder.java
+    │       │                   │   │   │   ├── ErrorResponseDecoder.java
+    │       │                   │   │   │   ├── FileListDecoder.java
+    │       │                   │   │   │   ├── JSONDecoder.java
+    │       │                   │   │   │   ├── LargeEvaluationResponseDecoder.java
+    │       │                   │   │   │   ├── Md5StatusDecoder.java
+    │       │                   │   │   │   ├── NullDecoder.java
+    │       │                   │   │   │   ├── ResultDecoder.java
+    │       │                   │   │   │   ├── StatisticsDecoder.java
+    │       │                   │   │   │   └── UploadResponseDecoder.java
+    │       │                   │   │   └── ServiceError.java
+    │       │                   │   ├── ui
+    │       │                   │   │   ├── AssignmentBoardWidget.java
+    │       │                   │   │   ├── AssignmentBoardWidget.ui.xml
+    │       │                   │   │   ├── AssignmentWidget.java
+    │       │                   │   │   ├── AssignmentWidget.ui.xml
+    │       │                   │   │   ├── HeaderWidget.java
+    │       │                   │   │   ├── HeaderWidget.ui.xml
+    │       │                   │   │   ├── images
+    │       │                   │   │   │   ├── connection.png
+    │       │                   │   │   │   ├── file.png
+    │       │                   │   │   │   ├── folder.png
+    │       │                   │   │   │   ├── locale.png
+    │       │                   │   │   │   ├── VmcheckerImages.java
+    │       │                   │   │   │   └── zip.png
+    │       │                   │   │   ├── LoginWidget.java
+    │       │                   │   │   ├── LoginWidget.ui.xml
+    │       │                   │   │   ├── NumberedMenuItem.java
+    │       │                   │   │   ├── NumberedMenuItem.ui.xml
+    │       │                   │   │   ├── NumberedMenu.java
+    │       │                   │   │   ├── NumberedMenu.ui.xml
+    │       │                   │   │   ├── ResultsWidget.java
+    │       │                   │   │   ├── ResultsWidget.ui.xml
+    │       │                   │   │   ├── StatementWidget.java
+    │       │                   │   │   ├── StatementWidget.ui.xml
+    │       │                   │   │   ├── StatisticsWidget.java
+    │       │                   │   │   ├── StatisticsWidget.ui.xml
+    │       │                   │   │   ├── UploadLargeWidget.java
+    │       │                   │   │   ├── UploadLargeWidget.ui.xml
+    │       │                   │   │   ├── UploadNormalWidget.java
+    │       │                   │   │   ├── UploadNormalWidget.ui.xml
+    │       │                   │   │   ├── ViewStack.java
+    │       │                   │   │   └── VmcheckerPopup.java
+    │       │                   │   └── Vmchecker.java
+    │       │                   └── Vmchecker.gwt.xml
+    │       └── war
+    │           ├── images
+    │           │   ├── favicon.ico -> vmchecker-logo-sqare-16x16.ico
+    │           │   ├── vmchecker_logo_large.png
+    │           │   ├── vmchecker-logo-perfect-fit-16x12.png
+    │           │   ├── vmchecker-logo-sqare-16x16.ico
+    │           │   └── vmchecker_logo_ui.png
+    │           ├── Vmchecker.css
+    │           └── Vmchecker.html
+    ├── images
+    │   ├── favicon.ico
+    │   ├── logo
+    │   │   ├── vmchecker-logo-sqare-128x128.ico
+    │   │   ├── vmchecker-logo-sqare-16x16.ico
+    │   │   ├── vmchecker-logo-sqare-24x24.ico
+    │   │   ├── vmchecker-logo-sqare-32x32.ico
+    │   │   ├── vmchecker-logo-sqare-64x64.ico
+    │   │   └── vmchecker-logo.svg
+    │   └── logo-and-name
+    │       ├── vmchecker-logo-and-name-as-paths.svg
+    │       └── vmchecker-logo-and-name-as-text.svg
+    ├── INSTALL
+    ├── LICENSE
+    ├── README.rst
+    ├── setup.py
+    ├── testing
+    │   └── pa
+    │       ├── dummy
+    │       │   ├── c.timeout
+    │       │   ├── input
+    │       │   │   ├── t01.in
+    │       │   │   ├── t02.in
+    │       │   │   └── t03.in
+    │       │   ├── java.timeout
+    │       │   ├── Makefile.checker
+    │       │   ├── refs
+    │       │   │   ├── t01.out
+    │       │   │   ├── t02.out
+    │       │   │   └── t03.out
+    │       │   └── verify
+    │       ├── pa-linux_vmchecker_build.sh
+    │       ├── pa-linux_vmchecker_run.sh
+    │       └── tracker.c
+    ├── tests
+    │   ├── run-all.sh
+    │   ├── services
+    │   │   ├── form_login.html
+    │   │   ├── form_uploadAssignment.html
+    │   │   ├── getAssignments.json
+    │   │   ├── getCourses.json
+    │   │   ├── get-requests-urls.txt
+    │   │   └── uploadAssignments.json
+    │   ├── storer-init-submit.sh
+    │   ├── test-acl.py
+    │   └── ut_submit.py
+    ├── vmchecker
+    │   ├── callback.py
+    │   ├── confdefaults.py
+    │   ├── config.py
+    │   ├── coursedb.py
+    │   ├── courselist.py
+    │   ├── dirlocking.py
+    │   ├── examples
+    │   │   ├── auth_file.json
+    │   │   ├── config-template
+    │   │   ├── so-linux_vmchecker_build.sh
+    │   │   ├── so-linux_vmchecker_run.sh
+    │   │   ├── so-win_vmchecker_build.sh
+    │   │   └── so-win_vmchecker_run.sh
+    │   ├── __init__.py
+    │   ├── jsonutil.py
+    │   ├── paths.py
+    │   ├── penalty.py
+    │   ├── repo_walker.py
+    │   ├── submissions.py
+    │   ├── submit.py
+    │   ├── tempfileutil.py
+    │   ├── update_db.py
+    │   ├── vmlogging.py
+    │   ├── websutil.py
+    │   ├── zipfile.py
+    │   └── ziputil.py
+    └── web_services
+        └── services.py
+
+36 directories, 183 files
+
+Main directories description:
+
+	- bin - a directory that should be contained by the storer machine . It has the following python scripts : 
+		
+		- vmchecker-download-external-files A script to download files (that are not stored on vmchecker-storer)that required for testing from another system through ssh.
+
+		- vmchecker-init-course storer - Initialises the directory path for a course storer machine and it does the following:
+			- creates an example config file to a file named 'config' in the current directory. It get the example config from examples/config-template
+			- Creates the repo for the assignments on the storer.
+			- Create the implicit db if it does not exist.
+			- Copy the example auth file from examples/auth_file.json.
+			- Copy build and run example scripts into the root path
+			- Run initialization tasks for the tester machine.
+			- Run initialization tasks for the storer machine.
+		- vmchecker-init-course tester - Initialises the directory path for a course tester machine
+		- vmchecker-queue-manager - wait for assignments to appear and invoke vmchecker-vm-executor to handle them.
+		- vmchecker-submit - A tool used to submit homework from the command line.
+		- vmchecker-update-db - Script to manually update the db storring info from the repo
+		- vmchecker-view-grades - Generates a HTML table containing the students' grades.
+		- vmchecker-vm-executor - A script that starts a vm, reverts it to a known snapshot, tests a submission bundle (submission + tests), and closes the vm
+	Vmchecker/bin in on the tester machine , where vmchecker-queue-manager runs as a deamon and for each submission vmchecker-vm-executor is started. 
+	Vmchecker homework repository example:
+		├── 0-hash-linux/
+│   ├── ]
+│   ├── adela.alecu/
+│   │   ├── current -> /home/so/vmchecker-storer/repo/0-hash-linux/adela.alecu/sb_2012.03.01__20.04.13_rnd201/
+│   │   ├── sb_2012.02.26__23.49.34_rnd606/
+│   │   │   ├── archive.zip
+│   │   │   └── git/
+│   │   │      └── submission-config
+│   │   ├── sb_2012.02.26__23.50.05_rnd84/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── lista.c
+│   │   │   │   │   ├── lista.h
+│   │   │   │   │   └── tema1.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.27__00.03.53_rnd585/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── lista.c
+│   │   │   │   │   ├── lista.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.28__21.13.21_rnd951/
+│   │   │   ├── archive.zip
+│   │   │   └── git/
+│   │   │      └── submission-config
+│   │   ├── sb_2012.02.28__21.14.58_rnd712/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── lista.c
+│   │   │   │   │   ├── lista.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.28__21.15.04_rnd181/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── lista.c
+│   │   │   │   │   ├── lista.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.28__21.17.37_rnd859/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── lista.c
+│   │   │   │   │   ├── lista.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.28__21.54.50_rnd399/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── lista.c
+│   │   │   │   │   ├── lista.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.28__21.54.59_rnd321/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── lista.c
+│   │   │   │   │   ├── lista.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.28__23.06.55_rnd946/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── lista.c
+│   │   │   │   │   ├── lista.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.28__23.11.58_rnd183/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── Makefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── lista.c
+│   │   │   │   │   ├── lista.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.29__20.56.33_rnd651/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── Makefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── lista.c
+│   │   │   │   │   ├── lista.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.29__20.59.06_rnd7/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── Makefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── lista.c
+│   │   │   │   │   ├── lista.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.29__21.12.19_rnd349/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── Makefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── lista.c
+│   │   │   │   │   ├── lista.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.29__21.15.50_rnd791/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── Makefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── lista.c
+│   │   │   │   │   ├── lista.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.29__21.16.28_rnd843/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── Makefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── lista.c
+│   │   │   │   │   ├── lista.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.29__21.22.24_rnd476/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── Makefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── lista.c
+│   │   │   │   │   ├── lista.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   └── sb_2012.03.01__20.04.13_rnd201/
+│   │      ├── archive.zip
+│   │      ├── git/
+│   │      │   ├── archive/
+│   │      │   │   ├── GNUmakefile
+│   │      │   │   ├── Makefile
+│   │      │   │   ├── README
+│   │      │   │   ├── hash.c
+│   │      │   │   ├── hash.h
+│   │      │   │   ├── lista.c
+│   │      │   │   ├── lista.h
+│   │      │   │   └── tema0.c
+│   │      │   └── submission-config
+│   │      └── results/
+│   │          ├── build-stderr.vmr
+│   │          ├── build-stdout.vmr
+│   │          ├── grade.vmr
+│   │          ├── run-stderr.vmr
+│   │          ├── run-stdout.vmr
+│   │          └── vmchecker-stderr.vmr
+│   ├── adil.serroukh/
+│   │   ├── current -> /home/so/vmchecker-storer/repo/0-hash-linux/adil.serroukh/sb_2012.02.29__12.39.54_rnd170/
+│   │   ├── sb_2012.02.28__11.35.13_rnd782/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   └── main.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   └── sb_2012.02.29__12.39.54_rnd170/
+│   │      ├── archive.zip
+│   │      ├── git/
+│   │      │   ├── archive/
+│   │      │   │   ├── GNUmakefile
+│   │      │   │   ├── Makefile
+│   │      │   │   ├── README
+│   │      │   │   ├── hash.c
+│   │      │   │   ├── hash.h
+│   │      │   │   └── main.c
+│   │      │   └── submission-config
+│   │      └── results/
+│   │          ├── build-stderr.vmr
+│   │          ├── build-stdout.vmr
+│   │          ├── grade.vmr
+│   │          ├── run-stderr.vmr
+│   │          ├── run-stdout.vmr
+│   │          └── vmchecker-stderr.vmr
+│   ├── adrian.chitescu/
+│   │   ├── current -> /home/so/vmchecker-storer/repo/0-hash-linux/adrian.chitescu/sb_2012.03.02__13.54.54_rnd284/
+│   │   ├── sb_2012.02.21__00.54.08_rnd797/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── hash.out
+│   │   │   │   │   ├── hash_table.c
+│   │   │   │   │   ├── hash_table.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.21__17.09.50_rnd683/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── hash.out
+│   │   │   │   │   ├── hash_table.c
+│   │   │   │   │   ├── hash_table.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.21__17.12.49_rnd286/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── hash_table.c
+│   │   │   │   │   ├── hash_table.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.25__17.01.03_rnd42/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── Makefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── hash_table.c
+│   │   │   │   │   ├── hash_table.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.25__17.30.13_rnd837/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── hash_table.c
+│   │   │   │   │   ├── hash_table.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.25__17.31.56_rnd590/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── Makefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── hash_table.c
+│   │   │   │   │   ├── hash_table.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.26__23.19.20_rnd436/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── hash_table.c
+│   │   │   │   │   ├── hash_table.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.02.26__23.20.26_rnd561/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── GNUmakefile
+│   │   │   │   │   ├── Makefile
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   ├── hash_table.c
+│   │   │   │   │   ├── hash_table.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+│   │   │      ├── build-stderr.vmr
+│   │   │      ├── build-stdout.vmr
+│   │   │      ├── grade.vmr
+│   │   │      ├── run-stderr.vmr
+│   │   │      ├── run-stdout.vmr
+│   │   │      └── vmchecker-stderr.vmr
+│   │   ├── sb_2012.03.01__18.31.42_rnd768/
+│   │   │   ├── archive.zip
+│   │   │   └── git/
+│   │   │      ├── archive/
+│   │   │      │   ├── GNUmakefile
+│   │   │      │   ├── Makefile
+│   │   │      │   ├── README
+│   │   │      │   ├── hash.c
+│   │   │      │   ├── hash.h
+│   │   │      │   ├── hash_table.c
+│   │   │      │   ├── hash_table.h
+│   │   │      │   └── tema0.c
+│   │   │      └── submission-config
+│   │   ├── sb_2012.03.01__18.35.32_rnd213/
+│   │   │   ├── archive.zip
+│   │   │   └── git/
+│   │   │      ├── archive/
+│   │   │      │   ├── GNUmakefile
+│   │   │      │   ├── Makefile
+│   │   │      │   ├── README
+│   │   │      │   ├── hash.c
+│   │   │      │   ├── hash.h
+│   │   │      │   ├── hash_table.c
+│   │   │      │   ├── hash_table.h
+│   │   │      │   └── tema0.c
+│   │   │      └── submission-config
+│   │   └── sb_2012.03.02__13.54.54_rnd284/
+│   │      ├── archive.zip
+│   │      ├── current -> ../../repo/0-hash-linux/adrian.chitescu/current
+│   │      ├── git/
+│   │      │   ├── archive/
+│   │      │   │   ├── GNUmakefile
+│   │      │   │   ├── Makefile
+│   │      │   │   ├── README
+│   │      │   │   ├── hash.c
+│   │      │   │   ├── hash.h
+│   │      │   │   ├── hash_table.c
+│   │      │   │   ├── hash_table.h
+│   │      │   │   └── tema0.c
+│   │      │   └── submission-config
+│   │      └── results/
+│   │          ├── build-stderr.vmr
+│   │          ├── build-stdout.vmr
+│   │          ├── grade.vmr
+│   │          ├── run-stderr.vmr
+│   │          ├── run-stdout.vmr
+│   │          └── vmchecker-stderr.vmr
+│   ├── adrian.ciobanu/
+│   │   ├── current -> /home/so/vmchecker-storer/repo/0-hash-linux/adrian.ciobanu/sb_2012.03.01__18.04.00_rnd179/
+│   │   ├── sb_2012.02.21__11.48.02_rnd992/
+│   │   │   ├── archive.zip
+│   │   │   ├── git/
+│   │   │   │   ├── archive/
+│   │   │   │   │   ├── Makefile
+│   │   │   │   │   ├── README
+│   │   │   │   │   ├── hash.c
+│   │   │   │   │   ├── hash.h
+│   │   │   │   │   └── tema0.c
+│   │   │   │   └── submission-config
+│   │   │   └── results/
+
+	Each directory has the following files:
+		-repo where all the assignments are saved
+		-name of an assignment 
+		-name of the student that submitted the files for testing
+		-a submission id 
+		-archive.zip the submitted archive
+		-archive  the unzipped files
+		-results contains various files of the students output and grade . 
+
+
+
