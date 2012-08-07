@@ -1,7 +1,7 @@
 [vmchecker]
-root = /home/vmchecker-rsoc/public_html/opt/vmchecker/storer/home/courses/so/2012
-repository = /home/vmchecker-rsoc/public_html/opt/vmchecker/storer/home/courses/so/2012/repo
-CourseName = so
+root = /home/vmchecker-rsoc/public_html/opt/vmchecker/storer/home/courses/pa/2012
+repository = /home/vmchecker-rsoc/public_html/opt/vmchecker/storer/home/courses/pa/2012/repo
+CourseName = pa
 
 
 
